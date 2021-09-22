@@ -8,7 +8,9 @@ var User = new Schema({
   password:{type:String,required:true},
   name: {type:String},
   admin:{type:Boolean, default: false},
-  date: {type:Date, default: Date.now}
+  date: {type:Date, default: Date.now},
+  shoes: [{type: Schema.Types.ObjectId, ref: 'Shoe'}],
+  runs: [{type: Schema.Types.ObjectId, ref: 'Run'}]
 
 });
 

@@ -8,7 +8,7 @@ var Run = new Schema({
   distance: {type:Number, default: 0, required:true},
   elevation: {type:Number, default: 0},
   description: {type:String,required:true},
-  shoes: {type: Schema.Types.ObjectId, ref: 'Shoes'},
+  shoe: {type: Schema.Types.ObjectId, ref: 'Shoe'},
   user: {type: Schema.Types.ObjectId, ref: 'User'},
 
 });
