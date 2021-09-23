@@ -1,8 +1,16 @@
 var express = require('express');
 var router = express.Router();
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
+
+require('dotenv').config()
+const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
+
+const jwtStrategy  = require("../middleware/jwt");
+passport.use(jwtStrategy);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -22,11 +30,37 @@ router.post('/new', function(req, res, next) {
         if (err) {return next(err)}
         // res.redirect('user/' + req.body.username);
         // res.render('welcome', {title: req.body.username, username: req.body.username});
-        return res.status(200).send("Welcome!");
+        return res.status(200).send("Welcome! You've now signed up.");
 
       })
     };
   });
+});
+
+router.post('/login', async (req, res) => {
+    let { email, password } = req.body;
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (match) {
+        const opts = {}
+        opts.expiresIn = '30d'; //is this safe?
+        const secret = JWTsecret
+        const token = jwt.sign({ email }, secret, opts);
+        return res.status(200).json({
+            message: "Auth Passed",
+            token,
+            admin: user.admin,
+            user: user._id
+        })
+      }
+    }
+    return res.status(401).json({ message: "Auth Failed" })
+
 });
 
 module.exports = router;
