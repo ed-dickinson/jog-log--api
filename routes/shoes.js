@@ -8,25 +8,21 @@ require('dotenv').config()
 const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
+Shoe = require('../models/shoe');
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.json({user: 'shoes'});
 });
 
-router.post('/new', async function(req, res, next) {
-  // res.send('respond with a resource');
-
-  let count = await User.countDocuments(); // this will break if any are deleted
-  if (count) {
+router.post('/new', function(req, res, next) {
   bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
     if (err) return next(err)
     else {
       const user = new User({
-        _id: count + 1,
         email: req.body.email,
         password: hashedPassword,
         // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
@@ -39,7 +35,6 @@ router.post('/new', async function(req, res, next) {
       })
     };
   });
-  }
 });
 
 router.post('/login', async (req, res) => {
