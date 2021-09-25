@@ -10,6 +10,7 @@ var Run = new Schema({
   description: {type:String,required:true},
   shoe: {type: Schema.Types.ObjectId, ref: 'Shoe'},
   user: {type: Schema.Types.ObjectId, ref: 'User'},
+  no: {type:Number,required:true},
 
 });
 

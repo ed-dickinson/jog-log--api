@@ -4,8 +4,9 @@ var Schema = mongoose.Schema;
 
 var User = new Schema({
 
-  _id: {type:Number,required:true},
+  // _id: {type:Number,required:true},
 
+  no: {type:Number,required:true},
   email:{type:String,required:true},
   password:{type:String,required:true},
   name: {type:String},
@@ -14,7 +15,8 @@ var User = new Schema({
   shoes: [{type: Schema.Types.ObjectId, ref: 'Shoe'}],
   runs: [{type: Schema.Types.ObjectId, ref: 'Run'}]
 
-}, { _id: false });
+// }, { _id: false
+});
 
 
 module.exports = mongoose.model('User', User);

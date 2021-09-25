@@ -8,6 +8,7 @@ require('dotenv').config()
 const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
+Count = require('../models/count');
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
@@ -17,16 +18,31 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.get('/:no', function(req, res, next) {
+  User.findOne({'no':req.params.no})
+    .exec(function(err, user) {
+      if (err) {return next(err);}
+      if (user==null) {
+        var err = new Error('No user found!');
+        err.status = 404;
+        return next(err);
+      }
+      return res.json({user});
+    })
+});
+
 router.post('/new', async function(req, res, next) {
   // res.send('respond with a resource');
+  let count = await Count.findOne();
 
-  let count = await User.countDocuments(); // this will break if any are deleted
+  // let count = await User.countDocuments(); // this will break if any are deleted
   if (count) {
   bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
     if (err) return next(err)
     else {
       const user = new User({
-        _id: count + 1,
+        // _id: count + 1,
+        no: count.user + 1,
         email: req.body.email,
         password: hashedPassword,
         // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
@@ -34,6 +50,8 @@ router.post('/new', async function(req, res, next) {
         if (err) {
           return next(err)
         }
+        count.user++;
+        count.save(err => {if (err) return next(err)});
         return res.status(200).send("Welcome! You've now signed up.");
 
       })
