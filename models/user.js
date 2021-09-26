@@ -12,8 +12,10 @@ var User = new Schema({
   name: {type:String},
   admin:{type:Boolean, default: false},
   joined: {type:Date, default: Date.now},
-  shoes: [{type: Schema.Types.ObjectId, ref: 'Shoe'}],
-  runs: [{type: Schema.Types.ObjectId, ref: 'Run'}]
+  // shoes: [{type: Schema.Types.ObjectId, ref: 'Shoe'}],
+  // runs: [{type: Schema.Types.ObjectId, ref: 'Run'}]
+  shoes: [{type: Number, ref: 'Shoe'}],
+  runs: [{type: Number, ref: 'Run'}]
 
 // }, { _id: false
 });

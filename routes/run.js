@@ -9,25 +9,26 @@ const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
 Shoe = require('../models/shoe');
+Run = require('../models/run')
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.json({index: 'shoes'});
+  res.json({index: 'run'});
 });
 
 router.get('/:no', function(req, res, next) {
-  Shoe.findOne({'no':req.params.no})
-    .exec(function(err, shoe) {
+  Run.findOne({'no':req.params.no})
+    .exec(function(err, run) {
       if (err) {return next(err);}
-      if (shoe==null) {
-        var err = new Error('No shoe found!');
+      if (run==null) {
+        var err = new Error('No run found!');
         err.status = 404;
         return next(err);
       }
-      return res.json({shoe});
+      return res.json({run});
     })
 });
 
@@ -38,18 +39,21 @@ router.post('/new', async function(req, res, next) {
   // let count = await User.countDocuments(); // this will break if any are deleted
   if (count) {
 
-    const shoe = new Shoe({
-      no: count.shoe + 1,
-      name: req.body.name,
+    const run = new Run({
+      no: count.run + 1,
       user: req.body.user,
-      // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
+      user: req.body.shoe,
+
+      distance: req.body.distance,
+      elevation: req.body.elevation,
+      description: req.body.description,
     }).save(err => {
       if (err) {
         return next(err)
       }
-      count.shoe++;
+      count.run++;
       count.save(err => {if (err) return next(err)});
-      return res.status(200).json({message: "New shoe added.", shoe});
+      return res.status(200).json({message: "New run added.", run});
 
     })
   }
