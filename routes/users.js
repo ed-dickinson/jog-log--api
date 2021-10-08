@@ -45,6 +45,7 @@ router.post('/new', async function(req, res, next) {
         no: count.user + 1,
         email: req.body.email,
         password: hashedPassword,
+        name: req.body.name,
         // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
       }).save(err => {
         if (err) {
@@ -77,8 +78,8 @@ router.post('/login', async (req, res) => {
         return res.status(200).json({
             message: "Auth Passed",
             token,
-            admin: user.admin,
-            user: user._id
+            user: user,
+
         })
       }
     }
