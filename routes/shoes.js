@@ -49,8 +49,8 @@ router.post('/new', async function(req, res, next) {
         return next(err)
       }
       count.shoe++;
-      // count.save(err => {if (err) return next(err)});
-      user.shoes.push(count.shoe+1);
+      count.save(err => {if (err) return next(err)});
+      user.shoes.push(count.shoe);
       user.save(err => {if (err) return next(err)});
       return res.status(200).json({message: "New shoe added.", shoe});
 
