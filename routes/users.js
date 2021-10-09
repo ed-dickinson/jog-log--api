@@ -7,8 +7,11 @@ const passport = require('passport');
 require('dotenv').config()
 const JWTsecret = process.env.JWT_SECRET;
 
+// path is /user/
+
 User = require('../models/user');
 Count = require('../models/count');
+Shoe = require('../models/shoe')
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
@@ -17,6 +20,8 @@ passport.use(jwtStrategy);
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
+
+
 
 router.get('/:no', function(req, res, next) {
   User.findOne({'no':req.params.no})
@@ -30,6 +35,19 @@ router.get('/:no', function(req, res, next) {
       return res.json({user});
     })
 });
+
+router.get('/:no/shoes', function (req,res,next) {
+  Shoe.find({'user':req.params.no})
+    .exec(function(err, shoes) {
+      if (err) {return next(err);}
+      if (shoes==null) {
+        var err = new Error('No shoes found!');
+        err.status = 404;
+        return next(err);
+      }
+      return res.json({shoes});
+    })
+})
 
 router.post('/new', async function(req, res, next) {
   // res.send('respond with a resource');
