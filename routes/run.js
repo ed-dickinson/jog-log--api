@@ -59,10 +59,10 @@ router.post('/new', async function(req, res, next) {
         return next(err)
       }
       count.run++;
-      // count.save(err => {if (err) return next(err)});
+      count.save(err => {if (err) return next(err)});
       if (shoe) {
         shoe.distance += req.body.distance;
-        // shoe.save(err => {if (err) return next(err)});
+        shoe.save(err => {if (err) return next(err)});
       }
       return res.status(200).json({message: "New run added.", run});
 
