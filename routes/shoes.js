@@ -22,7 +22,7 @@ router.get('/:no', function(req, res, next) {
   Shoe.findOne({'no':req.params.no})
     .exec(function(err, shoe) {
       if (err) {return next(err);}
-      if (shoe==null) {
+      if (shoe===null) {
         var err = new Error('No shoe found!');
         err.status = 404;
         return next(err);
@@ -31,16 +31,19 @@ router.get('/:no', function(req, res, next) {
     })
 });
 
-router.post('/new', async function(req, res, next) {
+router.post('/new', passport.authenticate('jwt', { session: false }), async function(req, res, next) {
   // res.send('respond with a resource');
   let count = await Count.findOne();
   let user = await User.findOne({'no':req.body.user});
+  // let shoe_check = await Shoe.findOne({'no':req.params.no});
 
   // let count = await User.countDocuments(); // this will break if any are deleted
-  if (count && user) {
 
+  if (count && user) {
+    // do {count.shoe++;} while (shoe_check!==null);
+    count.shoe++;
     const shoe = new Shoe({
-      no: count.shoe + 1,
+      no: count.shoe,
       name: req.body.name,
       user: req.body.user,
       // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
@@ -48,7 +51,7 @@ router.post('/new', async function(req, res, next) {
       if (err) {
         return next(err)
       }
-      count.shoe++;
+
       count.save(err => {if (err) return next(err)});
       user.shoes.push(count.shoe);
       user.save(err => {if (err) return next(err)});

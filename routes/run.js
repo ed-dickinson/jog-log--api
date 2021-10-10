@@ -14,6 +14,8 @@ Run = require('../models/run')
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
 
+//path is /run/
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.json({index: 'run'});
@@ -35,6 +37,10 @@ router.get('/:no', function(req, res, next) {
 router.post('/new', async function(req, res, next) {
   // res.send('respond with a resource');
   let count = await Count.findOne();
+  if (req.body.shoe) {
+    let shoe = await Shoe.findOne({'no':req.body.shoe});
+  }
+
 
   // let count = await User.countDocuments(); // this will break if any are deleted
   if (count) {
@@ -42,17 +48,22 @@ router.post('/new', async function(req, res, next) {
     const run = new Run({
       no: count.run + 1,
       user: req.body.user,
-      user: req.body.shoe,
+      shoe: req.body.shoe,
 
       distance: req.body.distance,
       elevation: req.body.elevation,
+      date: req.body.date,
       description: req.body.description,
     }).save(err => {
       if (err) {
         return next(err)
       }
       count.run++;
-      count.save(err => {if (err) return next(err)});
+      // count.save(err => {if (err) return next(err)});
+      if (shoe) {
+        shoe.distance += req.body.distance;
+        // shoe.save(err => {if (err) return next(err)});
+      }
       return res.status(200).json({message: "New run added.", run});
 
     })

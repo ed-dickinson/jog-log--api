@@ -21,8 +21,6 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-
-
 router.get('/:no', function(req, res, next) {
   User.findOne({'no':req.params.no})
     .exec(function(err, user) {
