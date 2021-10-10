@@ -37,13 +37,11 @@ router.get('/:no', function(req, res, next) {
 router.post('/new', async function(req, res, next) {
   // res.send('respond with a resource');
   let count = await Count.findOne();
-  if (req.body.shoe) {
-    let shoe = await Shoe.findOne({'no':req.body.shoe});
-  }
-
+  let shoe = await Shoe.findOne({'no':req.body.shoe});
+  let user = await User.findOne({'no':req.body.user});
 
   // let count = await User.countDocuments(); // this will break if any are deleted
-  if (count) {
+  if (count && shoe && user) {
 
     const run = new Run({
       no: count.run + 1,
@@ -60,10 +58,13 @@ router.post('/new', async function(req, res, next) {
       }
       count.run++;
       count.save(err => {if (err) return next(err)});
-      if (shoe) {
-        shoe.distance += req.body.distance;
-        shoe.save(err => {if (err) return next(err)});
-      }
+      // if (shoe) {
+      shoe.distance += req.body.distance;
+      shoe.save(err => {if (err) return next(err)});
+
+      user.runs.push(count.run);
+      user.save(err => {if (err) return next(err)});
+      // }
       return res.status(200).json({message: "New run added.", run});
 
     })
