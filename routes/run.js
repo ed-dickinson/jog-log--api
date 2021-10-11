@@ -9,7 +9,7 @@ const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
 Shoe = require('../models/shoe');
-Run = require('../models/run')
+Run = require('../models/run');
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
@@ -65,7 +65,7 @@ router.post('/new', async function(req, res, next) {
       user.runs.push(count.run);
       user.save(err => {if (err) return next(err)});
       // }
-      return res.status(200).json({message: "New run added.", run});
+      return res.status(200).json({message: "Jog logged!", run});
 
     })
   }

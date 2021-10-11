@@ -11,7 +11,8 @@ const JWTsecret = process.env.JWT_SECRET;
 
 User = require('../models/user');
 Count = require('../models/count');
-Shoe = require('../models/shoe')
+Shoe = require('../models/shoe');
+Run = require('../models/run');
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
@@ -44,6 +45,19 @@ router.get('/:no/shoes', function (req,res,next) {
         return next(err);
       }
       return res.json({shoes});
+    })
+})
+
+router.get('/:no/runs', function (req,res,next) {
+  Run.find({'user':req.params.no})
+    .exec(function(err, runs) {
+      if (err) {return next(err);}
+      if (runs==null) {
+        var err = new Error('No runs found!');
+        err.status = 404;
+        return next(err);
+      }
+      return res.json({runs});
     })
 })
 
