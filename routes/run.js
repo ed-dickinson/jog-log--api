@@ -10,6 +10,7 @@ const JWTsecret = process.env.JWT_SECRET;
 User = require('../models/user');
 Shoe = require('../models/shoe');
 Run = require('../models/run');
+Test = require('../models/test');
 
 const jwtStrategy  = require("../middleware/jwt");
 passport.use(jwtStrategy);
@@ -69,6 +70,31 @@ router.post('/new', async function(req, res, next) {
 
     })
   }
+});
+
+router.post('/import', async function(req, res, next) {
+
+
+    const run = new Run({
+      no: req.body.no,
+      user: req.body.user,
+      shoe: req.body.shoe,
+
+      distance: req.body.distance,
+      elevation: req.body.elevation,
+      date: req.body.date,
+      description: req.body.description,
+      // imported: req.body.imported,
+    }).save(err => {
+      if (err) {
+        return next(err)
+      }
+
+
+      return res.status(200).json({message: "Run imported!", run});
+
+    })
+
 });
 
 module.exports = router;

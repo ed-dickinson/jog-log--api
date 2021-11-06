@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-var Run = new Schema({
+var Test = new Schema({
 
   date: {type:Date, default: Date.now, required:true},
   distance: {type:Number, default: 0, required:true},
@@ -18,4 +18,4 @@ var Run = new Schema({
 });
 
 
-module.exports = mongoose.model('Run', Run);
+module.exports = mongoose.model('Test', Test);
