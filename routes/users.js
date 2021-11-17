@@ -83,7 +83,7 @@ router.post('/new', async function(req, res, next) {
         }
         count.user++;
         count.save(err => {if (err) return next(err)});
-        return res.status(200).send("Welcome! You've now signed up.");
+        return res.status(200).json({message: "Welcome! You've now signed up.", user: user});
 
       })
     };

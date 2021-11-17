@@ -10,6 +10,9 @@ var runRouter = require('./routes/run');
 var shoeRouter = require('./routes/shoes');
 // var importRouter = require('./routes/import');
 
+var compression = require('compression');
+var helmet = require('helmet');
+
 var cors = require('cors');
 var app = express();
 
@@ -26,6 +29,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(helmet());
+app.use(compression());
 
 app.use(logger('dev'));
 app.use(express.json());
