@@ -6,6 +6,7 @@ const passport = require('passport');
 
 require('dotenv').config()
 const JWTsecret = process.env.JWT_SECRET;
+const StravaSecret = process.env.STRAVA_SECRET;
 
 // path is /user/
 
@@ -91,6 +92,8 @@ router.post('/new', async function(req, res, next) {
   }
 });
 
+
+
 router.post('/login', async (req, res) => {
     let { email, password } = req.body;
 
@@ -112,6 +115,71 @@ router.post('/login', async (req, res) => {
 
         })
       }
+    }
+    return res.status(401).json({ message: "Auth Failed" })
+
+});
+
+router.post('/strava-new', async function(req, res, next) {
+  // res.send('respond with a resource');
+  let count = await Count.findOne();
+
+
+
+  // let count = await User.countDocuments(); // this will break if any are deleted
+  if (count) {
+  bcrypt.hash(StravaSecret, 10, (err, hashedPassword) => {
+    if (err) return next(err)
+    else {
+
+      const user = new User({
+
+        no: req.body.id,
+        // email: req.body.email,
+        password: hashedPassword,
+        // name: req.body.name,
+        strava_id: req.body.id,
+        connected_to_strava: true
+        // joined: req.body.joined//2021-08-05T00:00:00.000+00:00
+      }).save(err => {
+        
+        if (err) {
+          return next(err)
+        }
+        count.user++;
+        count.save(err => {if (err) return next(err)});
+        return res.status(200).json({message: "Confirmed! Account linked.", user: user});
+
+      })
+    };
+  });
+  }
+});
+
+
+
+router.post('/strava-login', async (req, res) => {
+    let { id, password } = req.body;
+    let user = await User.findOne({ id });
+
+    if (user) {
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (match) {
+        const opts = {}
+        opts.expiresIn = '30d'; //is this safe?
+        const secret = JWTsecret
+        const token = jwt.sign({ id }, secret, opts);
+        return res.status(200).json({
+            message: "Auth Passed",
+            token,
+            user: user,
+
+        })
+      }
+    } else {
+      return res.status(204).json({ message: "No User Found" })
     }
     return res.status(401).json({ message: "Auth Failed" })
 

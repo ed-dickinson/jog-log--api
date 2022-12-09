@@ -22,6 +22,19 @@ router.get('/', function(req, res, next) {
   res.json({index: 'run'});
 });
 
+router.get('/all', function(req, res, next) {
+  Run.find()
+    .exec(function(err, runs) {
+      if (err) {return next(err);}
+      if (runs==null) {
+        var err = new Error('No run found!');
+        err.status = 404;
+        return next(err);
+      }
+      return res.json({runs});
+    })
+});
+
 router.get('/:no', function(req, res, next) {
   Run.findOne({'no':req.params.no})
     .exec(function(err, run) {
@@ -35,41 +48,65 @@ router.get('/:no', function(req, res, next) {
     })
 });
 
+
+
 router.post('/new', async function(req, res, next) {
   // res.send('respond with a resource');
   let count = await Count.findOne();
-  let shoe = await Shoe.findOne({'no':req.body.shoe});
+  // let shoe = await Shoe.findOne({'no':req.body.shoe});
   let user = await User.findOne({'no':req.body.user});
 
   // let count = await User.countDocuments(); // this will break if any are deleted
-  if (count && shoe && user) {
+  if (count && user) {
 
     const run = new Run({
       no: count.run + 1,
       user: req.body.user,
-      shoe: req.body.shoe,
 
-      distance: req.body.distance,
-      elevation: req.body.elevation,
+      title: req.body.title,
       date: req.body.date,
       description: req.body.description,
+      strava_id: req.body.strava_id
+      // if no strava_id then it will just skip it. do ?: to make null
     }).save(err => {
       if (err) {
         return next(err)
       }
       count.run++;
       count.save(err => {if (err) return next(err)});
-      // if (shoe) {
-      shoe.distance += req.body.distance;
-      shoe.save(err => {if (err) return next(err)});
 
       user.runs.push(count.run);
       user.save(err => {if (err) return next(err)});
-      // }
+
       return res.status(200).json({message: "Jog logged!", run});
 
     })
   }
+});
+
+router.post('/edit/:no', async (req, res, next) => {
+    // let { id, password } = req.body;
+    let run = await Run.findOne({'no':req.params.no});
+
+    // errr hello this DON'T DO NOTHIN!
+
+
+
+
+    if (run) {
+
+      run.title = req.body.title
+      run.description = req.body.description
+      run.date = req.body.date
+
+      run.save(err => {if (err) return next(err)});
+
+      return res.status(200).json({message: "Jog logged!"})
+    } else {
+      return res.status(204).json({ message: "No run found" })
+    }
+    return res.status(401).json({ message: "Run edit failed" })
+
 });
 
 router.post('/import', async function(req, res, next) {
